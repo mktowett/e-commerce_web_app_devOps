@@ -17,6 +17,15 @@ resource "aws_instance" "pern_ec2" {
   key_name                    = local.key_name_effective
   associate_public_ip_address = true
 
+  iam_instance_profile = aws_iam_instance_profile.pern.name
+
+
+  root_block_device {
+    encrypted   = true
+    volume_size = 20
+  }
+
+  //encrypted root volume
   user_data = <<-EOF
     #!/bin/bash
     apt-get update -y
@@ -24,17 +33,12 @@ resource "aws_instance" "pern_ec2" {
     # Docker
     install -m 0755 -d /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      $(. /etc/os-release && echo $VERSION_CODENAME) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+    echo "deb [signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" \
+      | tee /etc/apt/sources.list.d/docker.list > /dev/null
     apt-get update -y
     apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
     usermod -aG docker ubuntu
-
-    # Basic firewall (optional; SG already limits)
     ufw allow 22; ufw allow 80; ufw allow 443; ufw allow 3000; ufw allow 9000; ufw allow 5432; ufw allow 9090; ufw allow 3001; yes | ufw enable
-
-    # Placeholders for your app bootstrap later
     mkdir -p /opt/pern && echo "PERN host ready" > /opt/pern/READY
   EOF
 
