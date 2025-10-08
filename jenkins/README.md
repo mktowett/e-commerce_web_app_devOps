@@ -19,23 +19,13 @@ Complete CI/CD pipeline for a full-stack e-commerce application built with Postg
 - Pulls latest code from GitHub repository
 - Sets up workspace with full repository content
 
-### 2. **Test (Server with Ephemeral Postgres)**
-- **Duration:** ~30-60 seconds
-- **Network:** Creates isolated Docker network `ci-test`
-- **Database:** Spins up `postgres:15-alpine` container
-- **Environment Variables:**
-  ```
-  NODE_ENV=test
-  POSTGRES_HOST=test-db
-  POSTGRES_PORT=5432
-  POSTGRES_USER=postgres
-  POSTGRES_PASSWORD=newpassword
-  POSTGRES_DB=ecommercestore_test
-  SECRET=test_secret
-  REFRESH_SECRET=test_refresh_secret
-  ```
-- **Test Suite:** Currently runs health check test only (database tests disabled for CI stability)
+### 2. **Test (Health Check Only)**
+- **Duration:** ~15-30 seconds
+- **Container:** Simple `node:18-alpine` container
+- **Test Suite:** Health endpoint test (`GET /api/health → { status: "ok" }`)
+- **No Database Required:** Health check is a simple status endpoint
 - **Expected Result:** `PASS __tests__/health.test.js` (1 test passed)
+- **Note:** Database-dependent tests are disabled for CI stability
 
 ### 3. **Docker Login**
 - Authenticates with DockerHub using stored credentials
@@ -203,7 +193,7 @@ docker compose -f /opt/pern/docker-compose.prod.yml exec -T db psql -U postgres 
 | Issue | Symptoms | Solution |
 |-------|----------|----------|
 | **Docker login fails** | `401 Unauthorized` during push | Check DockerHub credentials in Jenkins |
-| **Test failures** | Database connection refused | Verify test database setup in pipeline |
+| **Test failures** | Health test returns non-200 | Check server startup and health endpoint |
 | **Build failures** | Docker build context errors | Check Dockerfile paths and build context |
 | **Deploy failures** | Compose pull/up errors | Check production server Docker setup |
 
