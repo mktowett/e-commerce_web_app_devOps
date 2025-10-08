@@ -8,6 +8,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const unknownEndpoint = require("./middleware/unKnownEndpoint");
 const { handleError } = require("./helpers/error");
+const { metricsMiddleware, metricsHandler } = require("./middleware/metrics");
 
 const app = express();
 
@@ -19,7 +20,12 @@ app.use(compression());
 app.use(helmet());
 app.use(cookieParser());
 
+app.use(metricsMiddleware);
+
 app.use("/api", routes);
+
+// Metrics endpoint
+app.get("/metrics", metricsHandler);
 
 app.get("/", (req, res) =>
   res.send("<h1 style='text-align: center'>E-COMMERCE API</h1>")
