@@ -1,6 +1,6 @@
 # E-COMMERCE STORE
 
-A modern full-stack e-commerce platform built with PostgreSQL, Express, React and Node.js.
+A modern full-stack e-commerce platform built with PostgreSQL, Express, React and Node.js, featuring comprehensive DevOps integration with Docker, Jenkins CI/CD, and automated testing.
 
 ## Features
 
@@ -11,6 +11,11 @@ A modern full-stack e-commerce platform built with PostgreSQL, Express, React an
 - Payment processing (Stripe integration)
 - Admin dashboard
 - Responsive design
+- **DevOps Integration**:
+  - Docker containerization for all services
+  - Jenkins CI/CD pipeline
+  - Automated testing with Jest
+  - Health monitoring endpoints
 
 ## Screenshots
 
@@ -91,31 +96,99 @@ docker-compose up --build
 The application will be available at:
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:9000
+- **Health Check**: http://localhost:9000/api/health
+- **API Documentation**: http://localhost:9000/api/docs
 - **Database**: localhost:5432
+
+## Testing
+
+The project includes a comprehensive test suite with automated database setup.
+
+### Running Tests
+
+```bash
+# Run all tests
+cd server && npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run specific test file
+npm test -- __tests__/health.test.js
+```
+
+### Test Coverage
+
+- **Health API**: Basic functionality verification
+- **Authentication**: User signup, login, and validation
+- **User Management**: CRUD operations with role-based access
+- **Product Management**: API endpoint testing
+
+### Test Features
+
+- Automated test database setup and teardown
+- Proper foreign key constraint handling
+- JWT token authentication testing
+- Role-based authorization testing
+
+## CI/CD Pipeline
+
+This project uses Jenkins for continuous integration and deployment:
+
+### Pipeline Stages
+
+1. **Checkout**: Pull latest code from repository
+2. **Build**: Build Docker images for client and server
+3. **Test**: Run automated test suite
+4. **Push**: Push images to Docker registry
+5. **Deploy**: Deploy to production environment (main branch only)
+
+### Jenkins Configuration
+
+The pipeline is defined in `Jenkinsfile` and includes:
+- Docker image building and tagging
+- Automated testing with database setup
+- Conditional deployment based on branch
+- Docker registry integration
 
 ## Deployment
 
-To deploy this project run
+### Manual Deployment
 
 ```bash
-  npm run deploy
+# Deploy using Docker Compose
+docker-compose up --build
 ```
 
-Check this article for [guidance](https://dev.to/stlnick/how-to-deploy-a-full-stack-mern-app-with-heroku-netlify-ncb)
-on how to deploy.
+### Automated Deployment
 
-## Tech
+The application automatically deploys when changes are pushed to the `main` branch through the Jenkins pipeline.
 
-- [React](https://reactjs.org/)
-- [Node](https://nodejs.org/en/)
-- [Express](http://expressjs.com/)
-- [Postgres](https://www.postgresql.org/)
-- [node-postgres](https://node-postgres.com/)
-- [Windmill React UI](https://windmillui.com/react-ui)
-- [Tailwind-CSS](https://tailwindcss.com/)
-- [react-hot-toast](https://react-hot-toast.com/docs)
-- [react-Spinners](https://www.npmjs.com/package/react-spinners)
-- [react-helmet-async](https://www.npmjs.com/package/react-helmet-async)
+## Tech Stack
+
+### Frontend
+- [React](https://reactjs.org/) - UI library
+- [Vite](https://vitejs.dev/) - Build tool
+- [Windmill React UI](https://windmillui.com/react-ui) - UI components
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [react-hot-toast](https://react-hot-toast.com/docs) - Notifications
+- [react-spinners](https://www.npmjs.com/package/react-spinners) - Loading indicators
+- [react-helmet-async](https://www.npmjs.com/package/react-helmet-async) - Head management
+
+### Backend
+- [Node.js](https://nodejs.org/en/) - Runtime environment
+- [Express](http://expressjs.com/) - Web framework
+- [PostgreSQL](https://www.postgresql.org/) - Database
+- [node-postgres](https://node-postgres.com/) - PostgreSQL client
+- [JWT](https://jwt.io/) - Authentication
+- [Stripe](https://stripe.com/) - Payment processing
+
+### DevOps & Testing
+- [Docker](https://www.docker.com/) - Containerization
+- [Docker Compose](https://docs.docker.com/compose/) - Multi-container orchestration
+- [Jenkins](https://www.jenkins.io/) - CI/CD pipeline
+- [Jest](https://jestjs.io/) - Testing framework
+- [Supertest](https://github.com/visionmedia/supertest) - HTTP testing
 
 ## Environment Variables
 
@@ -141,7 +214,7 @@ To run this project, you will need to add the following environment variables to
 
 `POSTGRES_DATABASE`
 
-`POSTGRES_DATABASE_TEST`
+`POSTGRES_DB_TEST`
 
 `POSTGRES_PORT`
 
@@ -155,6 +228,16 @@ To run this project, you will need to add the following environment variables to
 
 `STRIPE_SECRET_KEY`
 
+## Project Status
+
+✅ **All tests passing** - Comprehensive test suite with 22 tests covering authentication, user management, and API endpoints
+
+✅ **Docker ready** - Fully containerized application with development and production configurations
+
+✅ **CI/CD integrated** - Jenkins pipeline for automated testing and deployment
+
+✅ **Health monitoring** - Health check endpoints for monitoring application status
+
 ## Contributing
 
 1. Fork the Project
@@ -163,10 +246,6 @@ To run this project, you will need to add the following environment variables to
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## Feedback
+## Contact
 
-Joseph Odunsi - [@odunsi](https://twitter.com/_odunsi_) - odunsiolakunbi@gmail.com
-
-Project Link: [https://github.com/dhatguy/PERN-Store](https://github.com/dhatguy/PERN-Store)
-
-Demo Link: [https://pern-store.netlify.app](https://pern-store.netlify.app)
+Project Link: [https://github.com/mktowett/e-commerce_web_app_devOps](https://github.com/mktowett/e-commerce_web_app_devOps)
