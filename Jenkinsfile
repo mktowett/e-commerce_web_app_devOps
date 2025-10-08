@@ -1,9 +1,7 @@
 pipeline {
   agent any
 
-  options {
-    timestamps()
-  }
+  options { timestamps() }
 
   environment {
     REGISTRY_NS     = 'mktowett'
@@ -19,11 +17,11 @@ pipeline {
       steps {
         sh '''
           set -e
-          # Clean up from previous runs
+          # Clean from previous runs
           docker rm -f test-db 2>/dev/null || true
           docker network create ci-test 2>/dev/null || true
 
-          # 1) Start Postgres on an isolated Docker network
+          # 1) Start Postgres on isolated network
           docker run -d --name test-db --network ci-test \
             -e POSTGRES_DB=ecommercestore_test \
             -e POSTGRES_USER=postgres \
@@ -38,7 +36,7 @@ pipeline {
             sleep 1
           done
 
-          # 3) Run server tests on the SAME network; connect by service name
+          # 3) Run server tests on SAME network (connect by service name)
           docker run --rm --network ci-test \
             -v "$WORKSPACE/server":/app -w /app \
             -e NODE_ENV=test \
@@ -96,7 +94,14 @@ pipeline {
     }
 
     stage('Deploy (main only)') {
-      when { branch 'main' }
+      when {
+        expression {
+          // Works for single Pipeline jobs where GIT_BRANCH may be 'origin/main'
+          def b = (env.BRANCH_NAME ?: env.GIT_BRANCH ?: '')
+          b = b.replaceFirst(/^origin\//, '')
+          return b == 'main'
+        }
+      }
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKERHUB_USR', passwordVariable: 'DOCKERHUB_PSW')]) {
           sh '''
