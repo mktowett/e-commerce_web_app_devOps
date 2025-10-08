@@ -35,37 +35,43 @@ pipeline {
     stage('Test') {
       steps {
         sh '''
-          # Start test database
-          docker run -d --name test-db \
+          set -e
+          # Clean old
+          docker rm -f test-db 2>/dev/null || true
+          docker network create ci-test 2>/dev/null || true
+
+          # 1) Start Postgres on the SAME Docker network
+          docker run -d --name test-db --network ci-test \
             -e POSTGRES_DB=ecommercestore_test \
             -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=newpassword \
-            -p 5433:5432 \
+            --health-cmd="pg_isready -U postgres" \
+            --health-interval=1s --health-timeout=5s --health-retries=30 \
             postgres:15-alpine
 
-          # Wait for database to be ready
-          echo "Waiting for database to be ready..."
-          timeout 30 bash -c 'until docker exec test-db pg_isready -U postgres; do sleep 1; done'
+          # 2) Wait for DB to be healthy
+          echo "Waiting for test-db..."
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' test-db)" = "healthy" ]; do
+            sleep 1
+          done
 
-          # Run tests
-          cd server
-          export NODE_ENV=test
-          export POSTGRES_HOST=localhost
-          export POSTGRES_PORT=5433
-          export POSTGRES_USER=postgres
-          export POSTGRES_PASSWORD=newpassword
-          export POSTGRES_DB=ecommercestore
-          export POSTGRES_DB_TEST=ecommercestore_test
-          export SECRET=test_secret
-          export REFRESH_SECRET=test_refresh_secret
-          
-          npm ci
-          npm test
+          # 3) Run server tests on the SAME network, connecting by service name
+          docker run --rm --network ci-test \
+            -v "$WORKSPACE/server":/app -w /app \
+            -e NODE_ENV=test \
+            -e POSTGRES_HOST=test-db \
+            -e POSTGRES_PORT=5432 \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=newpassword \
+            -e POSTGRES_DB=ecommercestore_test \
+            -e SECRET=test_secret \
+            -e REFRESH_SECRET=test_refresh_secret \
+            node:18-alpine sh -lc "npm ci && npm test"
         '''
       }
       post {
         always {
-          sh 'docker rm -f test-db || true'
+          sh 'docker rm -f test-db || true; docker network rm ci-test || true'
         }
       }
     }
