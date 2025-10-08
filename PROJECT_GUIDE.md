@@ -1,7 +1,7 @@
 # 🚀 DevOps Pipeline Project Board
 ## E-Commerce PERN Store - End-to-End Automation
 
-**Project Status:** 🔴 Not Started  
+**Project Status:** 🟡 Phase 3 - Section 3.3 (Create Jenkinsfile)  
 **Target Completion:** Tomorrow  
 **Tech Stack:** Node.js, PostgreSQL, Docker, Jenkins, Terraform, AWS EC2, Prometheus, Grafana
 
@@ -21,96 +21,96 @@ Building a complete DevOps pipeline for a PERN (PostgreSQL, Express, React, Node
 ## ✅ Project Checklist
 
 ### 🏗️ PHASE 1: Initial Setup & Repository
-**Status:** ⬜ Not Started | **Duration:** 30 mins | **Priority:** 🔴 Critical
+**Status:** ✅ Completed | **Duration:** 30 mins | **Priority:** 🔴 Critical
 
-- [ ] Clone PERN-Store repository
-- [ ] Create `devops-pipeline` branch
-- [ ] Test existing Docker setup locally
+- [x] Clone PERN-Store repository
+- [x] Create `devops-pipeline` branch
+- [x] Test existing Docker setup locally
   ```bash
   docker-compose -f docker-compose.dev.yml up --build
   ```
-- [ ] Verify application runs (Frontend: 3000, Backend: 9000, DB: 5432)
-- [ ] Create project directory structure
-- [ ] Initial commit with project structure
+- [x] Verify application runs (Frontend: 3000, Backend: 9000, DB: 5432)
+- [x] Create project directory structure
+- [x] Initial commit with project structure
 
-**Success Criteria:** ✓ Application running locally with Docker
+**Success Criteria:** ✅ Application running locally with Docker
 
 ---
 
 ### ☁️ PHASE 2: Infrastructure as Code (Terraform)
-**Status:** ⬜ Not Started | **Duration:** 2 hours | **Priority:** 🔴 Critical
+**Status:** ✅ Completed | **Duration:** 2 hours | **Priority:** 🔴 Critical
 
 #### 2.1 Setup Terraform Directory
-- [ ] Create `terraform/` directory
-- [ ] Create `provider.tf` - AWS provider configuration
-- [ ] Create `variables.tf` - Define all variables
-- [ ] Create `terraform.tfvars.example` - Variable templates
+- [x] Create `terraform/` directory
+- [x] Create `provider.tf` - AWS provider configuration
+- [x] Create `variables.tf` - Define all variables
+- [x] Create `terraform.tfvars.example` - Variable templates
 
 #### 2.2 EC2 Configuration
-- [ ] Create `ec2.tf` - EC2 instance definition
-  - [ ] Instance type: t2.medium
-  - [ ] AMI: Ubuntu 22.04 LTS
-  - [ ] User data script for initial setup
-- [ ] Create key pair for SSH access
-- [ ] Configure instance profile/IAM role
+- [x] Create `ec2.tf` - EC2 instance definition
+  - [x] Instance type: t2.medium
+  - [x] AMI: Ubuntu 22.04 LTS
+  - [x] User data script for initial setup
+- [x] Create key pair for SSH access
+- [x] Configure instance profile/IAM role
 
 #### 2.3 Networking & Security
-- [ ] Create `security-groups.tf`
-  - [ ] Inbound: SSH (22), HTTP (80), HTTPS (443)
-  - [ ] Inbound: App ports (3000, 9000, 5432)
-  - [ ] Inbound: Monitoring (9090, 3001)
-  - [ ] Outbound: All traffic
-- [ ] Create VPC configuration (or use default)
+- [x] Create `security-groups.tf`
+  - [x] Inbound: SSH (22), HTTP (80), HTTPS (443)
+  - [x] Inbound: App ports (3000, 9000, 5432)
+  - [x] Inbound: Monitoring (9090, 3001)
+  - [x] Outbound: All traffic
+- [x] Create VPC configuration (or use default)
 
 #### 2.4 Storage
-- [ ] Create `s3.tf` - S3 bucket for artifacts/backups
-- [ ] Configure bucket policies
-- [ ] Enable versioning
+- [x] Create `s3.tf` - S3 bucket for artifacts/backups
+- [x] Configure bucket policies
+- [x] Enable versioning
 
 #### 2.5 Outputs & Documentation
-- [ ] Create `outputs.tf` - Export important values
-- [ ] Create `README.md` in terraform directory
-- [ ] Test terraform commands:
+- [x] Create `outputs.tf` - Export important values
+- [x] Create `README.md` in terraform directory
+- [x] Test terraform commands:
   ```bash
   terraform init
   terraform plan
   terraform apply
   ```
 
-**Success Criteria:** ✓ AWS infrastructure provisioned successfully
+**Success Criteria:** ✅ AWS infrastructure provisioned successfully
 
 ---
 
 ### 🔄 PHASE 3: CI/CD Pipeline (Jenkins)
-**Status:** ⬜ Not Started | **Duration:** 3 hours | **Priority:** 🔴 Critical
+**Status:** 🟡 In Progress - Section 3.3 | **Duration:** 3 hours | **Priority:** 🔴 Critical
 
 #### 3.1 Jenkins Setup
-- [ ] SSH into EC2 instance
-- [ ] Install Jenkins
+- [x] SSH into EC2 instance
+- [x] Install Jenkins
   ```bash
   sudo apt update
   sudo apt install openjdk-11-jdk -y
   # Install Jenkins
   ```
-- [ ] Install Docker on EC2
-- [ ] Install required Jenkins plugins:
-  - [ ] Docker Pipeline
-  - [ ] Git Plugin
-  - [ ] SSH Agent
-  - [ ] Pipeline
+- [x] Install Docker on EC2
+- [x] Install required Jenkins plugins:
+  - [x] Docker Pipeline
+  - [x] Git Plugin
+  - [x] SSH Agent
+  - [x] Pipeline
 
 #### 3.2 Jenkins Configuration
-- [ ] Create Jenkins credentials:
-  - [ ] GitHub credentials
-  - [ ] DockerHub credentials
-  - [ ] SSH key for deployment
-- [ ] Configure Jenkins security
-- [ ] Set up Jenkins URL
+- [x] Create Jenkins credentials:
+  - [x] GitHub credentials
+  - [x] DockerHub credentials
+  - [x] SSH key for deployment
+- [x] Configure Jenkins security
+- [x] Set up Jenkins URL
 
-#### 3.3 Create Jenkinsfile
-- [ ] Create `Jenkinsfile` in project root
-- [ ] Stage 1: Checkout code
-- [ ] Stage 2: Install dependencies
+#### 3.3 Create Jenkinsfile ⬅️ **CURRENT TASK**
+- [x] Create `Jenkinsfile` in project root
+- [x] Stage 1: Checkout code
+- [ ] Stage 2: Install dependencies ⬅️ **WORKING ON THIS**
   ```groovy
   stage('Install Dependencies') {
     steps {
@@ -124,8 +124,8 @@ Building a complete DevOps pipeline for a PERN (PostgreSQL, Express, React, Node
   ```groovy
   stage('Build Docker Images') {
     steps {
-      sh 'docker build -t username/pern-client:${BUILD_NUMBER} ./client'
-      sh 'docker build -t username/pern-server:${BUILD_NUMBER} ./server'
+      sh 'docker build -t username/e-commerce-client:${BUILD_NUMBER} ./client'
+      sh 'docker build -t username/e-commerce-server:${BUILD_NUMBER} ./server'
     }
   }
   ```
