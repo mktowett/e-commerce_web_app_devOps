@@ -5,10 +5,10 @@ const path = require('path');
 // Create test database if it doesn't exist
 async function setupTestDatabase() {
   const adminPool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    password: 'newpassword',
-    port: 5432,
+    user: process.env.POSTGRES_USER || 'postgres',
+    host: process.env.POSTGRES_HOST || 'localhost',
+    password: process.env.POSTGRES_PASSWORD || 'newpassword',
+    port: process.env.POSTGRES_PORT || 5432,
     database: 'postgres' // Connect to default postgres database first
   });
 
@@ -33,11 +33,11 @@ async function setupTestDatabase() {
 
   // Now connect to the test database and run the schema
   const testPool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    password: 'newpassword',
-    port: 5432,
-    database: 'ecommercestore_test'
+    user: process.env.POSTGRES_USER || 'postgres',
+    host: process.env.POSTGRES_HOST || 'localhost',
+    password: process.env.POSTGRES_PASSWORD || 'newpassword',
+    port: process.env.POSTGRES_PORT || 5432,
+    database: process.env.POSTGRES_DB_TEST || 'ecommercestore_test'
   });
 
   try {

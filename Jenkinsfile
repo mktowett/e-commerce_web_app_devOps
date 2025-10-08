@@ -32,6 +32,44 @@ pipeline {
       }
     }
 
+    stage('Test') {
+      steps {
+        sh '''
+          # Start test database
+          docker run -d --name test-db \
+            -e POSTGRES_DB=ecommercestore_test \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=newpassword \
+            -p 5433:5432 \
+            postgres:15-alpine
+
+          # Wait for database to be ready
+          echo "Waiting for database to be ready..."
+          timeout 30 bash -c 'until docker exec test-db pg_isready -U postgres; do sleep 1; done'
+
+          # Run tests
+          cd server
+          export NODE_ENV=test
+          export POSTGRES_HOST=localhost
+          export POSTGRES_PORT=5433
+          export POSTGRES_USER=postgres
+          export POSTGRES_PASSWORD=newpassword
+          export POSTGRES_DB=ecommercestore
+          export POSTGRES_DB_TEST=ecommercestore_test
+          export SECRET=test_secret
+          export REFRESH_SECRET=test_refresh_secret
+          
+          npm ci
+          npm test
+        '''
+      }
+      post {
+        always {
+          sh 'docker rm -f test-db || true'
+        }
+      }
+    }
+
     stage('Build & Push Images') {
       steps {
         sh '''
