@@ -5,6 +5,12 @@ const pool = require("../../config");
 const bcrypt = require("bcrypt");
 
 beforeAll(async () => {
+  // Clean up in correct order due to foreign key constraints
+  await pool.query("DELETE FROM cart_item");
+  await pool.query("DELETE FROM cart");
+  await pool.query("DELETE FROM order_item");
+  await pool.query("DELETE FROM orders");
+  await pool.query("DELETE FROM reviews");
   await pool.query("DELETE FROM users");
 });
 
@@ -16,13 +22,20 @@ describe("/api/auth/signup", () => {
       fullname: "test db",
       username: "test",
     });
-    expect(res.body).toHaveProperty("userId");
-    expect(res.body).toHaveProperty("cartId");
+    expect(res.body).toHaveProperty("user");
+    expect(res.body.user).toHaveProperty("user_id");
+    expect(res.body).toHaveProperty("token");
     expect(res.statusCode).toBe(201);
   });
 
   describe("return error if username or email is taken", () => {
     beforeAll(async () => {
+      // Clean up in correct order due to foreign key constraints
+      await pool.query("DELETE FROM cart_item");
+      await pool.query("DELETE FROM cart");
+      await pool.query("DELETE FROM order_item");
+      await pool.query("DELETE FROM orders");
+      await pool.query("DELETE FROM reviews");
       await pool.query("DELETE FROM users");
       const hashedPassword = await bcrypt.hash("secret", 1);
       await pool.query(

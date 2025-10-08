@@ -10,6 +10,14 @@ let adminAuth = {};
 let customerAuth = {};
 
 beforeEach(async () => {
+  // Clean up in correct order due to foreign key constraints
+  await pool.query("DELETE FROM cart_item");
+  await pool.query("DELETE FROM cart");
+  await pool.query("DELETE FROM order_item");
+  await pool.query("DELETE FROM orders");
+  await pool.query("DELETE FROM reviews");
+  await pool.query("DELETE FROM users");
+
   const hashedPassword = await bcrypt.hash("secret", 1);
 
   // admin account
@@ -50,6 +58,12 @@ beforeEach(async () => {
 
 // remove all the users
 afterEach(async () => {
+  // Clean up in correct order due to foreign key constraints
+  await pool.query("DELETE FROM cart_item");
+  await pool.query("DELETE FROM cart");
+  await pool.query("DELETE FROM order_item");
+  await pool.query("DELETE FROM orders");
+  await pool.query("DELETE FROM reviews");
   await pool.query("DELETE FROM users");
 });
 
@@ -297,5 +311,12 @@ describe("User controller", () => {
 
 // close the connection
 afterAll(async () => {
-  pool.end();
+  // Clean up in correct order due to foreign key constraints
+  await pool.query("DELETE FROM cart_item");
+  await pool.query("DELETE FROM cart");
+  await pool.query("DELETE FROM order_item");
+  await pool.query("DELETE FROM orders");
+  await pool.query("DELETE FROM reviews");
+  await pool.query("DELETE FROM users");
+  await pool.end();
 });
