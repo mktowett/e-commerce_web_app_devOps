@@ -1,57 +1,85 @@
 pipeline {
   agent any
-  environment {
-    DOCKERHUB_NS = 'mktowett'
-    TAG          = "${env.BUILD_NUMBER}"
-    DOCKER_BUILDKIT = '1'
-    COMPOSE_DOCKER_CLI_BUILD = '1'
+  options {
+    timestamps()
+    ansiColor('xterm')
   }
-  options { timestamps() }
+  environment {
+    REGISTRY_NS = 'mktowett'
+    SHORT_SHA   = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+    DOCKER_BUILDKIT = '1'
+  }
 
   stages {
-    stage('Checkout') { steps { checkout scm } }
+    stage('Checkout') {
+      steps { checkout scm }
+    }
 
-    stage('Prep cache') {
+    stage('Test (server only)') {
       steps {
         sh '''
-          docker pull ${DOCKERHUB_NS}/pern-client:latest || true
-          docker pull ${DOCKERHUB_NS}/pern-server:latest || true
+          docker run --rm -v "$WORKSPACE/server":/app -w /app node:18-alpine sh -lc '
+            npm ci && npm test
+          '
         '''
       }
     }
 
-    stage('Build Docker images') {
+    stage('Docker Login') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKERHUB_USR', passwordVariable: 'DOCKERHUB_PSW')]) {
+          sh 'echo "$DOCKERHUB_PSW" | docker login -u "$DOCKERHUB_USR" --password-stdin'
+        }
+      }
+    }
+
+    stage('Build & Push Images') {
       steps {
         sh '''
-          set -e
-          docker build \
-            --build-arg BUILDKIT_INLINE_CACHE=1 \
-            --cache-from ${DOCKERHUB_NS}/pern-client:latest \
-            -t ${DOCKERHUB_NS}/pern-client:${TAG} ./client
+          docker buildx create --use --name ci-builder || true
 
-          docker build \
-            --build-arg BUILDKIT_INLINE_CACHE=1 \
-            --cache-from ${DOCKERHUB_NS}/pern-server:latest \
-            -t ${DOCKERHUB_NS}/pern-server:${TAG} ./server
+          # Client
+          docker buildx build \
+            -f client/Dockerfile \
+            -t ${REGISTRY_NS}/pern-client:latest \
+            -t ${REGISTRY_NS}/pern-client:${SHORT_SHA} \
+            --push \
+            client
 
-          docker tag ${DOCKERHUB_NS}/pern-client:${TAG} ${DOCKERHUB_NS}/pern-client:latest
-          docker tag ${DOCKERHUB_NS}/pern-server:${TAG} ${DOCKERHUB_NS}/pern-server:latest
+          # Server
+          docker buildx build \
+            -f server/Dockerfile \
+            -t ${REGISTRY_NS}/pern-server:latest \
+            -t ${REGISTRY_NS}/pern-server:${SHORT_SHA} \
+            --push \
+            server
         '''
       }
     }
 
-    stage('Push to DockerHub') {
+    stage('Deploy (main only)') {
+      when { branch 'main' }
       steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DUSER', passwordVariable: 'DPASS')]) {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKERHUB_USR', passwordVariable: 'DOCKERHUB_PSW')]) {
           sh '''
-            echo "$DPASS" | docker login -u "$DUSER" --password-stdin
-            docker push ${DOCKERHUB_NS}/pern-client:${TAG}
-            docker push ${DOCKERHUB_NS}/pern-client:latest
-            docker push ${DOCKERHUB_NS}/pern-server:${TAG}
-            docker push ${DOCKERHUB_NS}/pern-server:latest
+            set -e
+            echo "$DOCKERHUB_PSW" | docker login -u "$DOCKERHUB_USR" --password-stdin
+            cd /opt/pern
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
           '''
         }
       }
+    }
+  }
+
+  post {
+    success {
+      echo "Images pushed: ${REGISTRY_NS}/pern-client:latest, ${REGISTRY_NS}/pern-server:latest"
+      echo "Commit tag: ${SHORT_SHA}"
+    }
+    always {
+      sh 'docker logout || true'
     }
   }
 }
