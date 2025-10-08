@@ -5,9 +5,11 @@ const product = require("./product");
 const users = require("./users");
 const auth = require("./auth");
 const payment = require("./payment");
+const health = require("./health");
 const swaggerUi = require("swagger-ui-express");
 const docs = require("../docs");
 
+router.use("/health", health);
 router.use("/auth", auth);
 router.use("/users", users);
 router.use("/products", product);
