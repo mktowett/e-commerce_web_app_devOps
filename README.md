@@ -525,7 +525,7 @@ This project fulfills all requirements for an end-to-end DevOps pipeline assignm
 | **Monitoring** | Prometheus + Grafana with 4 scrape targets (app, system, containers) | [`monitoring/`](monitoring/) |
 | **DevSecOps** | Trivy scans (config, fs, image); reports archived in Jenkins | [CI/CD Pipeline](#cicd-pipeline), [Security](#security-devsecops) |
 | **Code Repository** | Complete with comprehensive README | This document |
-| **Architecture Diagram** | Pipeline flow and component interaction | `docs/architecture.png` (to be added) |
+| **Architecture Diagram** | Pipeline flow and component interaction | `docs/architecture.png`  |
 | **Live Demo** | Deployed on AWS EC2 | `http://51.21.235.209:3000` |
 | **Monitoring Dashboards** | Prometheus & Grafana screenshots | [`docs/screenshots/`](#screenshots) |
 | **CI/CD Config Files** | Jenkinsfile with 6 stages (Checkout, Test, Build, Scan, Deploy, Health Check) | [`Jenkinsfile`](Jenkinsfile) |
@@ -541,20 +541,6 @@ This project fulfills all requirements for an end-to-end DevOps pipeline assignm
 - ✅ **Containerization**: Multi-service Docker Compose setup (client, server, database, monitoring stack)
 - ✅ **Monitoring**: Prometheus scrapes 4 targets; Grafana visualizes metrics
 - ✅ **DevSecOps**: Trivy scans all images for vulnerabilities; generates SARIF and SBOM reports
-
----
-
-## Roadmap
-
-Future enhancements:
-
-- [ ] **Blocking Deployment on Critical Vulnerabilities**: Change Trivy `--exit-code 0` to `1` for image scans
-- [ ] **Nginx Reverse Proxy**: Unified routing for all services (client, server, Jenkins) with TLS termination
-- [ ] **Domain & TLS**: Configure custom domain with Let's Encrypt SSL certificates
-- [ ] **Additional Exporters**: Add `nginx_exporter` and `postgres_exporter` for deeper monitoring
-- [ ] **GitHub Release Automation**: Auto-create GitHub releases with changelog on version tags
-- [ ] **Blue-Green Deployment**: Zero-downtime deployments with traffic switching
-- [ ] **Automated Backups**: Scheduled PostgreSQL backups to S3
 
 ---
 
