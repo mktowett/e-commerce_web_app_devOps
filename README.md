@@ -1,6 +1,55 @@
-# E-COMMERCE STORE
+# 🚀 E-Commerce PERN Store - Complete DevOps Pipeline
 
-A modern full-stack e-commerce platform built with PostgreSQL, Express, React and Node.js, featuring comprehensive DevOps integration with Docker, Jenkins CI/CD, and automated testing.
+<div align="center">
+
+![DevOps](https://img.shields.io/badge/DevOps-Automated-blue?style=for-the-badge)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-Jenkins-red?style=for-the-badge&logo=jenkins)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-EC2-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+
+### **Production-Ready E-Commerce Platform with Full DevOps Automation**
+
+*A comprehensive demonstration of modern DevOps practices: Infrastructure as Code, CI/CD automation, containerization, and real-time monitoring*
+
+[🌐 Live Demo](http://51.21.235.209:3000) • [📊 Grafana Dashboards](http://51.21.235.209:3001) • [🔧 Jenkins Pipeline](http://51.21.235.209:8080) • [📈 Prometheus](http://51.21.235.209:9090)
+
+</div>
+
+---
+
+## 📋 Table of Contents
+
+- [Overview](#-overview)
+- [Live Deployments](#-live-deployments)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Key Features](#-key-features)
+- [DevOps Pipeline](#-devops-pipeline)
+- [Infrastructure](#-infrastructure)
+- [Monitoring & Observability](#-monitoring--observability)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [CI/CD Workflow](#-cicd-workflow)
+- [What I Learned](#-what-i-learned)
+- [Future Enhancements](#-future-enhancements)
+- [Contributing](#-contributing)
+
+---
+
+## 🎯 Overview
+
+This project showcases a **complete end-to-end DevOps implementation** for a full-stack e-commerce application. It demonstrates enterprise-level practices including Infrastructure as Code, automated CI/CD pipelines, containerization, orchestration, and comprehensive monitoring.
+
+**What makes this project special:**
+- ✅ **Zero-downtime deployments** with automated health checks
+- ✅ **Infrastructure as Code** - entire AWS infrastructure provisioned via Terraform
+- ✅ **Automated CI/CD** - from code commit to production in minutes
+- ✅ **Real-time monitoring** - custom Prometheus metrics with Grafana dashboards
+- ✅ **Production-ready** - security groups, proper networking, and best practices
+- ✅ **Fully documented** - comprehensive runbooks and architecture diagrams
 
 ## Features
 

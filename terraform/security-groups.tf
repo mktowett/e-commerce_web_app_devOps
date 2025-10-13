@@ -12,6 +12,8 @@ resource "aws_security_group" "pern_sg" {
       { from = 5432, to = 5432, proto = "tcp", cidr = var.allow_ssh_cidr }, # Postgres (admin only)
       { from = 9090, to = 9090, proto = "tcp", cidr = var.allow_ssh_cidr }, # Prometheus (admin only)
       { from = 3001, to = 3001, proto = "tcp", cidr = var.allow_ssh_cidr }, # Grafana (admin only)
+      { from = 8080, to = 8080, proto = "tcp", cidr = var.allow_ssh_cidr }, # cAdvisor (admin only)
+      { from = 9100, to = 9100, proto = "tcp", cidr = var.allow_ssh_cidr }, # Node Exporter (admin only)
     ]
     content {
       from_port   = ingress.value.from
