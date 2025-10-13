@@ -184,7 +184,7 @@ If you need to deploy manually (outside Jenkins):
 
 ```bash
 # SSH into EC2
-ssh -i ~/.ssh/mklord ubuntu@<ADD_PUBLIC_IP_OR_DOMAIN>
+ssh -i ~/.ssh/mklord ubuntu@51.21.235.209
 
 # Navigate to deployment directory
 cd /opt/pern
@@ -220,16 +220,16 @@ docker logs e-commerce-store-client -n 100
 
 ```bash
 # Check API health
-curl -sI http://<ADD_PUBLIC_IP_OR_DOMAIN>:9000/api/health | head -n1
+curl -sI http://51.21.235.209:9000/api/health | head -n1
 
 # Open frontend in browser
-open http://<ADD_PUBLIC_IP_OR_DOMAIN>:3000
+open http://51.21.235.209:3000
 
 # Access Prometheus
-open http://<ADD_PUBLIC_IP_OR_DOMAIN>:9090
+open http://51.21.235.209:9090
 
 # Access Grafana
-open http://<ADD_PUBLIC_IP_OR_DOMAIN>:3001
+open http://51.21.235.209:3001
 ```
 
 ---
@@ -238,7 +238,7 @@ open http://<ADD_PUBLIC_IP_OR_DOMAIN>:3001
 
 ### Prometheus
 
-- **URL**: `http://<ADD_PUBLIC_IP_OR_DOMAIN>:9090`
+- **URL**: `http://51.21.235.209:9090`
 - **Config**: [`monitoring/prometheus/prometheus.yml`](monitoring/prometheus/prometheus.yml)
 - **Scrape Targets**:
   - `prometheus:9090` (self-monitoring)
@@ -248,7 +248,7 @@ open http://<ADD_PUBLIC_IP_OR_DOMAIN>:3001
 
 ### Grafana
 
-- **URL**: `http://<ADD_PUBLIC_IP_OR_DOMAIN>:3001`
+- **URL**: `http://51.21.235.209:3001`
 - **Default Credentials**: `admin` / `admin123` (change after first login)
 - **Data Source**: Prometheus (pre-configured via provisioning)
 - **Dashboards**: Place custom dashboard JSON files in `monitoring/grafana/dashboards/`
@@ -484,16 +484,29 @@ Expected screenshots to be placed in `docs/screenshots/`:
 - **prometheus_targets.png**: Prometheus targets page showing all scrape targets UP
 - **grafana_dashboards.png**: Grafana dashboard showing system, container, or app metrics
 
-<!-- Uncomment when screenshots are added:
 ### Jenkins Pipeline
 ![Jenkins Pipeline](docs/screenshots/jenkins_pipeline.png)
+
+### Trivy Security Artifacts
+![Trivy Artifacts](docs/screenshots/trivy_artifacts.png)
 
 ### DockerHub Tags
 ![DockerHub Tags](docs/screenshots/dockerhub_tags.png)
 
+### EC2 Docker Status
+![EC2 Docker PS](docs/screenshots/ec2_docker_ps.png)
+
+### Application Homepage
+![App Home](docs/screenshots/app_home.png)
+
+### API Health Check
+![API Health 200](docs/screenshots/api_health_200.png)
+
+### Prometheus Targets
+![Prometheus Targets](docs/screenshots/prometheus_targets.png)
+
 ### Grafana Dashboards
 ![Grafana Dashboards](docs/screenshots/grafana_dashboards.png)
--->
 
 ---
 
@@ -513,7 +526,7 @@ This project fulfills all requirements for an end-to-end DevOps pipeline assignm
 | **DevSecOps** | Trivy scans (config, fs, image); reports archived in Jenkins | [CI/CD Pipeline](#cicd-pipeline), [Security](#security-devsecops) |
 | **Code Repository** | Complete with comprehensive README | This document |
 | **Architecture Diagram** | Pipeline flow and component interaction | `docs/architecture.png` (to be added) |
-| **Live Demo** | Deployed on AWS EC2 | `http://<ADD_PUBLIC_IP_OR_DOMAIN>:3000` |
+| **Live Demo** | Deployed on AWS EC2 | `http://51.21.235.209:3000` |
 | **Monitoring Dashboards** | Prometheus & Grafana screenshots | [`docs/screenshots/`](#screenshots) |
 | **CI/CD Config Files** | Jenkinsfile with 6 stages (Checkout, Test, Build, Scan, Deploy, Health Check) | [`Jenkinsfile`](Jenkinsfile) |
 
@@ -575,7 +588,7 @@ Data extracted from:
 - PROJECT_GUIDE.md: Project overview, tech stack, phase completion status
 
 Placeholders used:
-- <ADD_PUBLIC_IP_OR_DOMAIN>: Replace with EC2 Elastic IP or custom domain
+- 51.21.235.209: Replace with EC2 Elastic IP or custom domain
 - <ADD_DB_PASSWORD>: Replace with actual PostgreSQL password
 - <ADD_JWT_SECRET>: Replace with actual JWT signing secret
 - <ADD_REFRESH_SECRET>: Replace with actual JWT refresh secret
