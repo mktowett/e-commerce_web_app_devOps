@@ -20,6 +20,7 @@ Full-stack e-commerce application (PERN stack) with production-grade DevOps pipe
 - [Local Development](#local-development)
 - [Troubleshooting](#troubleshooting)
 - [Screenshots](#screenshots)
+- [Project Deliverables](#project-deliverables)
 - [Roadmap](#roadmap)
 - [License](#license)
 
@@ -493,6 +494,40 @@ Expected screenshots to be placed in `docs/screenshots/`:
 ### Grafana Dashboards
 ![Grafana Dashboards](docs/screenshots/grafana_dashboards.png)
 -->
+
+---
+
+## Project Deliverables
+
+This project fulfills all requirements for an end-to-end DevOps pipeline assignment:
+
+### ✅ Completed Deliverables
+
+| Requirement | Implementation | Location |
+|-------------|----------------|----------|
+| **Source Control** | GitHub repo with branching strategy (main branch) | [GitHub Repository](https://github.com/mktowett/e-commerce_web_app_devOps) |
+| **CI/CD Pipeline** | Jenkins with automated testing, building, scanning, and deployment | [`Jenkinsfile`](Jenkinsfile) |
+| **Infrastructure as Code** | Terraform provisions EC2, S3, Security Groups, IAM roles | [`terraform/`](terraform/) |
+| **Containerization** | Docker images on DockerHub; Docker Compose for multi-service setup | [`docker-compose.yml`](docker-compose.yml), [`docker-compose.monitoring.yml`](docker-compose.monitoring.yml) |
+| **Monitoring** | Prometheus + Grafana with 4 scrape targets (app, system, containers) | [`monitoring/`](monitoring/) |
+| **DevSecOps** | Trivy scans (config, fs, image); reports archived in Jenkins | [CI/CD Pipeline](#cicd-pipeline), [Security](#security-devsecops) |
+| **Code Repository** | Complete with comprehensive README | This document |
+| **Architecture Diagram** | Pipeline flow and component interaction | `docs/architecture.png` (to be added) |
+| **Live Demo** | Deployed on AWS EC2 | `http://<ADD_PUBLIC_IP_OR_DOMAIN>:3000` |
+| **Monitoring Dashboards** | Prometheus & Grafana screenshots | [`docs/screenshots/`](#screenshots) |
+| **CI/CD Config Files** | Jenkinsfile with 6 stages (Checkout, Test, Build, Scan, Deploy, Health Check) | [`Jenkinsfile`](Jenkinsfile) |
+
+### 📊 Assignment Alignment
+
+**Objective**: Build, containerize, and deploy a Node.js-based e-commerce app with full automation ✅
+
+**Key Components Implemented**:
+- ✅ **Source Control**: GitHub with main branch deployment strategy
+- ✅ **CI/CD**: Jenkins pipeline that runs tests, builds Docker images, pushes to DockerHub, deploys to AWS EC2
+- ✅ **IaC**: Terraform provisions complete AWS infrastructure (EC2 t3.micro, S3 artifacts bucket, Security Groups, Elastic IP)
+- ✅ **Containerization**: Multi-service Docker Compose setup (client, server, database, monitoring stack)
+- ✅ **Monitoring**: Prometheus scrapes 4 targets; Grafana visualizes metrics
+- ✅ **DevSecOps**: Trivy scans all images for vulnerabilities; generates SARIF and SBOM reports
 
 ---
 
