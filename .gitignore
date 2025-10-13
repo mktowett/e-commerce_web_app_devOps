@@ -13,3 +13,5 @@ client/public/sitemap.xml
 
 /server/.env
 /client/.env
+security/reports/
+.trivycache/
