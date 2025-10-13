@@ -1,300 +1,551 @@
-# 🚀 E-Commerce PERN Store - Complete DevOps Pipeline
+# E-Commerce DevOps: CI/CD to AWS EC2 with Docker, Nginx, Trivy, Prometheus & Grafana
 
-<div align="center">
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/mktowett/e-commerce_web_app_devOps)
+[![DockerHub](https://img.shields.io/badge/DockerHub-mktowett-blue?logo=docker)](https://hub.docker.com/u/mktowett)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![DevOps](https://img.shields.io/badge/DevOps-Automated-blue?style=for-the-badge)
-![CI/CD](https://img.shields.io/badge/CI%2FCD-Jenkins-red?style=for-the-badge&logo=jenkins)
-![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-EC2-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)
-![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
-![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?style=for-the-badge&logo=grafana&logoColor=white)
-
-### **Production-Ready E-Commerce Platform with Full DevOps Automation**
-
-*A comprehensive demonstration of modern DevOps practices: Infrastructure as Code, CI/CD automation, containerization, and real-time monitoring*
-
-[🌐 Live Demo](http://51.21.235.209:3000) • [📊 Grafana Dashboards](http://51.21.235.209:3001) • [🔧 Jenkins Pipeline](http://51.21.235.209:8080) • [📈 Prometheus](http://51.21.235.209:9090)
-
-</div>
+Full-stack e-commerce application (PERN stack) with production-grade DevOps pipeline: automated CI/CD via Jenkins, containerized deployment to AWS EC2, security scanning with Trivy, and real-time monitoring via Prometheus & Grafana.
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Live Deployments](#-live-deployments)
-- [Architecture](#-architecture)
-- [Tech Stack](#-tech-stack)
-- [Key Features](#-key-features)
-- [DevOps Pipeline](#-devops-pipeline)
-- [Infrastructure](#-infrastructure)
-- [Monitoring & Observability](#-monitoring--observability)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [CI/CD Workflow](#-cicd-workflow)
-- [What I Learned](#-what-i-learned)
-- [Future Enhancements](#-future-enhancements)
-- [Contributing](#-contributing)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Environments & Variables](#environments--variables)
+- [CI/CD Pipeline](#cicd-pipeline)
+- [Deployment (EC2)](#deployment-ec2)
+- [Monitoring](#monitoring)
+- [Security (DevSecOps)](#security-devsecops)
+- [Local Development](#local-development)
+- [Troubleshooting](#troubleshooting)
+- [Screenshots](#screenshots)
+- [Roadmap](#roadmap)
+- [License](#license)
 
 ---
 
-## 🎯 Overview
+## Architecture
 
-This project showcases a **complete end-to-end DevOps implementation** for a full-stack e-commerce application. It demonstrates enterprise-level practices including Infrastructure as Code, automated CI/CD pipelines, containerization, orchestration, and comprehensive monitoring.
+The pipeline automates the journey from code commit to production deployment:
 
-**What makes this project special:**
-- ✅ **Zero-downtime deployments** with automated health checks
-- ✅ **Infrastructure as Code** - entire AWS infrastructure provisioned via Terraform
-- ✅ **Automated CI/CD** - from code commit to production in minutes
-- ✅ **Real-time monitoring** - custom Prometheus metrics with Grafana dashboards
-- ✅ **Production-ready** - security groups, proper networking, and best practices
-- ✅ **Fully documented** - comprehensive runbooks and architecture diagrams
+1. **Developer** pushes to `main` branch on GitHub
+2. **Jenkins** detects the push (webhook or polling) and triggers the pipeline
+3. **Build & Push**: Docker images are built and pushed to DockerHub with `latest` and `<SHORT_SHA>` tags
+4. **Security Scan**: Trivy scans config files, filesystem, and images for vulnerabilities (HIGH/CRITICAL)
+5. **Deploy**: Jenkins SSHs into EC2, pulls images from DockerHub, and restarts containers via `docker compose`
+6. **Health Check**: Automated verification that `/api/health` returns 200
+7. **Monitoring**: Prometheus scrapes metrics; Grafana visualizes system, container, and app metrics
 
-## Features
+![Architecture](docs/architecture.png)
 
-- User authentication (JWT + Google OAuth)
-- Product catalog with search and filtering
-- Shopping cart functionality
-- Order management
-- Payment processing (Stripe integration)
-- Admin dashboard
-- Responsive design
-- **DevOps Integration**:
-  - Docker containerization for all services
-  - Jenkins CI/CD pipeline
-  - Automated testing with Jest
-  - Health monitoring endpoints
+### Routing Matrix
 
-## Screenshots
+| Path       | Service         | Notes                           |
+|------------|-----------------|---------------------------------|
+| `/`        | React client    | Served via `serve` on port 3000 |
+| `/api`     | Node server     | Health at `/api/health`         |
+| `/metrics` | prom-client     | Prometheus metrics endpoint     |
 
-![Homepage Screen Shot](https://user-images.githubusercontent.com/51405947/104136952-a3509100-5399-11eb-94a6-0f9b07fbf1a2.png)
+> **Note**: Nginx reverse proxy is not currently configured; services are accessed directly via their ports. Future enhancement will add Nginx for unified routing and TLS termination.
 
-## Database Schema
-
-[![ERD](https://user-images.githubusercontent.com/51405947/133893279-8872c475-85ff-47c4-8ade-7d9ef9e5325a.png)](https://dbdiagram.io/d/5fe320fa9a6c525a03bc19db)
-
-## Run Locally
-
-Clone the project
-
-```bash
-  git clone <your-repository-url>
-```
-
-Go to the project directory
-
-```bash
-  cd e-commerce-store
-```
-
-Install dependencies
-
-```bash
-  npm install
-```
-
-Go to server directory and install dependencies
-
-```bash
-  npm install
-```
-
-Go to client directory and install dependencies
-
-```bash
-  npm install
-```
-
-Go to server directory and start the server
-
-```bash
-  npm run dev
-```
-
-Go to client directory and start the client
-
-```bash
-  npm run client
-```
-
-Start both client and server concurrently from the root directory
-
-```bash
-  npm run dev
-```
-
-Go to http://localhost:3000 to view the app running on your browser.
-
-## Running with Docker
-
-Make sure you have Docker and Docker Compose installed.
-
-### Development Environment
-
-```bash
-docker-compose -f docker-compose.dev.yml up --build
-```
-
-### Production Environment
-
-```bash
-docker-compose up --build
-```
-
-The application will be available at:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:9000
-- **Health Check**: http://localhost:9000/api/health
-- **API Documentation**: http://localhost:9000/api/docs
-- **Database**: localhost:5432
-
-## Testing
-
-The project includes a comprehensive test suite with automated database setup.
-
-### Running Tests
-
-```bash
-# Run all tests
-cd server && npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run specific test file
-npm test -- __tests__/health.test.js
-```
-
-### Test Coverage
-
-- **Health API**: Basic functionality verification
-- **Authentication**: User signup, login, and validation
-- **User Management**: CRUD operations with role-based access
-- **Product Management**: API endpoint testing
-
-### Test Features
-
-- Automated test database setup and teardown
-- Proper foreign key constraint handling
-- JWT token authentication testing
-- Role-based authorization testing
-
-## CI/CD Pipeline
-
-This project uses Jenkins for continuous integration and deployment:
-
-### Pipeline Stages
-
-1. **Checkout**: Pull latest code from repository
-2. **Build**: Build Docker images for client and server
-3. **Test**: Run automated test suite
-4. **Push**: Push images to Docker registry
-5. **Deploy**: Deploy to production environment (main branch only)
-
-### Jenkins Configuration
-
-The pipeline is defined in `Jenkinsfile` and includes:
-- Docker image building and tagging
-- Automated testing with database setup
-- Conditional deployment based on branch
-- Docker registry integration
-
-## Deployment
-
-### Manual Deployment
-
-```bash
-# Deploy using Docker Compose
-docker-compose up --build
-```
-
-### Automated Deployment
-
-The application automatically deploys when changes are pushed to the `main` branch through the Jenkins pipeline.
+---
 
 ## Tech Stack
 
-### Frontend
-- [React](https://reactjs.org/) - UI library
-- [Vite](https://vitejs.dev/) - Build tool
-- [Windmill React UI](https://windmillui.com/react-ui) - UI components
-- [Tailwind CSS](https://tailwindcss.com/) - Styling
-- [react-hot-toast](https://react-hot-toast.com/docs) - Notifications
-- [react-spinners](https://www.npmjs.com/package/react-spinners) - Loading indicators
-- [react-helmet-async](https://www.npmjs.com/package/react-helmet-async) - Head management
+- **Infrastructure**: Terraform (AWS EC2 t3.micro, Elastic IP, S3 for artifacts, IAM roles, Security Groups)
+- **CI/CD**: Jenkins (Pipeline as Code via Jenkinsfile)
+- **Containerization**: Docker, Docker Compose, Docker Buildx
+- **Registry**: DockerHub (`mktowett/pern-client`, `mktowett/pern-server`)
+- **Frontend**: React 18, Vite, TailwindCSS, Axios, React Router
+- **Backend**: Node.js 18, Express, PostgreSQL 15, JWT, Stripe, prom-client
+- **Monitoring**: Prometheus, Grafana, node-exporter, cAdvisor
+- **Security**: Trivy (config, fs, image scans; SARIF & CycloneDX SBOM reports)
 
-### Backend
-- [Node.js](https://nodejs.org/en/) - Runtime environment
-- [Express](http://expressjs.com/) - Web framework
-- [PostgreSQL](https://www.postgresql.org/) - Database
-- [node-postgres](https://node-postgres.com/) - PostgreSQL client
-- [JWT](https://jwt.io/) - Authentication
-- [Stripe](https://stripe.com/) - Payment processing
+---
 
-### DevOps & Testing
-- [Docker](https://www.docker.com/) - Containerization
-- [Docker Compose](https://docs.docker.com/compose/) - Multi-container orchestration
-- [Jenkins](https://www.jenkins.io/) - CI/CD pipeline
-- [Jest](https://jestjs.io/) - Testing framework
-- [Supertest](https://github.com/visionmedia/supertest) - HTTP testing
+## Environments & Variables
 
-## Environment Variables
+### Server Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env files in both client and server directory
+| Variable            | Default/Example         | Description                                  |
+|---------------------|-------------------------|----------------------------------------------|
+| `NODE_ENV`          | `production`            | Runtime environment                          |
+| `PORT`              | `9000`                  | Server listen port                           |
+| `POSTGRES_HOST`     | `database`              | PostgreSQL hostname (Docker service name)    |
+| `POSTGRES_DB`       | `ecommercestore`        | Database name                                |
+| `POSTGRES_USER`     | `postgres`              | Database user                                |
+| `POSTGRES_PASSWORD` | `<ADD_DB_PASSWORD>`     | Database password (keep secret)              |
+| `POSTGRES_PORT`     | `5432`                  | Database port                                |
+| `SECRET`            | `<ADD_JWT_SECRET>`      | JWT signing secret                           |
+| `REFRESH_SECRET`    | `<ADD_REFRESH_SECRET>`  | JWT refresh token secret                     |
+| `CORS_ORIGIN`       | `http://localhost:3000` | Allowed CORS origin (set to EC2 IP in prod)  |
 
-#### client/.env
+### Client Environment Variables
 
-`VITE_GOOGLE_CLIENT_ID`
+| Variable            | Default/Example                | Description                          |
+|---------------------|--------------------------------|--------------------------------------|
+| `VITE_API_URL`      | `http://localhost:9000`        | Backend API base URL                 |
 
-`VITE_GOOGLE_CLIENT_SECRET`
+### Monitoring Environment Variables
 
-`VITE_API_URL`
+| Variable                      | Default/Example | Description                      |
+|-------------------------------|-----------------|----------------------------------|
+| `GF_SECURITY_ADMIN_USER`      | `admin`         | Grafana admin username           |
+| `GF_SECURITY_ADMIN_PASSWORD`  | `admin123`      | Grafana admin password           |
+| `GF_SERVER_ROOT_URL`          | `http://localhost:3001` | Grafana public URL       |
 
-`VITE_STRIPE_PUB_KEY`
+### Secrets Management
 
-### server/.env
+- **DO NOT** commit `.env` files or secrets to Git
+- Store production secrets in:
+  - Jenkins credentials (for CI/CD)
+  - EC2 instance `.env` files (for runtime)
+  - AWS Secrets Manager (optional, for advanced setups)
 
-`POSTGRES_USER`
+---
 
-`POSTGRES_HOST`
+## CI/CD Pipeline
 
-`POSTGRES_PASSWORD`
+The Jenkins pipeline is defined in [`Jenkinsfile`](Jenkinsfile) and executes the following stages:
 
-`POSTGRES_DATABASE`
+### Pipeline Stages
 
-`POSTGRES_DB_TEST`
+1. **Checkout**
+   - Clones the repository from GitHub
 
-`POSTGRES_PORT`
+2. **Test (health check only)**
+   - Runs `npm test` in a temporary Node container
+   - No database required (simplified for CI stability)
 
-`PORT`
+3. **Docker Login**
+   - Authenticates to DockerHub using Jenkins credentials (`dockerhub`)
 
-`SECRET`
+4. **Build & Push Images**
+   - Uses `docker buildx` for multi-platform builds (if needed)
+   - Builds and pushes:
+     - `mktowett/pern-client:latest`
+     - `mktowett/pern-client:<SHORT_SHA>`
+     - `mktowett/pern-server:latest`
+     - `mktowett/pern-server:<SHORT_SHA>`
+   - `<SHORT_SHA>` is the first 7 characters of the Git commit hash
 
-`REFRESH_SECRET`
+5. **Security Scan (Trivy)**
+   - **Config scan**: Scans Dockerfiles, docker-compose files for misconfigurations
+   - **Filesystem scan**: Scans source code for vulnerabilities, secrets, and misconfigurations
+   - **Image scan**: Scans Docker images for OS and application vulnerabilities
+   - Severity filter: `HIGH,CRITICAL`
+   - Exit code: `0` (non-blocking; deployment proceeds even if vulnerabilities are found)
+   - Outputs:
+     - `security/reports/trivy-config.txt`
+     - `security/reports/trivy-fs.txt`
+     - `security/reports/trivy-<image>.txt` (table format)
+     - `security/reports/trivy-<image>.sarif` (SARIF for code quality tools)
+     - `security/reports/sbom-<image>.cdx.json` (CycloneDX SBOM)
+   - Reports are archived as Jenkins artifacts
 
-`SMTP_FROM`
+6. **Deploy (main only)**
+   - Triggered only when the branch is `main`
+   - SSHs into EC2 instance
+   - Executes:
+     ```bash
+     cd /opt/pern
+     docker compose -f docker-compose.prod.yml pull
+     docker compose -f docker-compose.prod.yml up -d
+     ```
+   - Waits up to 30 seconds for `/api/health` to return 200
 
-`STRIPE_SECRET_KEY`
+### Triggering Builds
 
-## Project Status
+- **Automatic**: Configure a GitHub webhook to trigger builds on push to `main`
+- **Manual**: Click "Build Now" in Jenkins UI
 
-✅ **All tests passing** - Comprehensive test suite with 22 tests covering authentication, user management, and API endpoints
+### Viewing Security Reports
 
-✅ **Docker ready** - Fully containerized application with development and production configurations
+- Navigate to the build in Jenkins
+- Click "Build Artifacts"
+- Download reports from `security/reports/`
 
-✅ **CI/CD integrated** - Jenkins pipeline for automated testing and deployment
+---
 
-✅ **Health monitoring** - Health check endpoints for monitoring application status
+## Deployment (EC2)
 
-## Contributing
+### Prerequisites
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- EC2 instance provisioned via Terraform (see [terraform/README.md](terraform/README.md))
+- Docker and Docker Compose installed on EC2 (handled by Terraform user-data script)
+- Directory `/opt/pern` exists on EC2
+- `docker-compose.prod.yml` copied to `/opt/pern` (or pulled from repo)
 
-## Contact
+### Manual Deployment
 
-Project Link: [https://github.com/mktowett/e-commerce_web_app_devOps](https://github.com/mktowett/e-commerce_web_app_devOps)
+If you need to deploy manually (outside Jenkins):
+
+```bash
+# SSH into EC2
+ssh -i ~/.ssh/mklord ubuntu@<ADD_PUBLIC_IP_OR_DOMAIN>
+
+# Navigate to deployment directory
+cd /opt/pern
+
+# Pull latest images from DockerHub
+docker compose -f docker-compose.prod.yml pull
+
+# Start/restart containers
+docker compose -f docker-compose.prod.yml up -d
+
+# Verify containers are running
+docker ps
+```
+
+### Post-Deployment Health Checks
+
+**On EC2:**
+
+```bash
+# Check API health
+curl -sI http://127.0.0.1:9000/api/health | head -n1
+# Expected: HTTP/1.1 200 OK
+
+# Check container status
+docker ps
+
+# View logs
+docker logs e-commerce-store-server -n 100
+docker logs e-commerce-store-client -n 100
+```
+
+**From your local machine:**
+
+```bash
+# Check API health
+curl -sI http://<ADD_PUBLIC_IP_OR_DOMAIN>:9000/api/health | head -n1
+
+# Open frontend in browser
+open http://<ADD_PUBLIC_IP_OR_DOMAIN>:3000
+
+# Access Prometheus
+open http://<ADD_PUBLIC_IP_OR_DOMAIN>:9090
+
+# Access Grafana
+open http://<ADD_PUBLIC_IP_OR_DOMAIN>:3001
+```
+
+---
+
+## Monitoring
+
+### Prometheus
+
+- **URL**: `http://<ADD_PUBLIC_IP_OR_DOMAIN>:9090`
+- **Config**: [`monitoring/prometheus/prometheus.yml`](monitoring/prometheus/prometheus.yml)
+- **Scrape Targets**:
+  - `prometheus:9090` (self-monitoring)
+  - `node-exporter:9100` (system metrics: CPU, RAM, disk, network)
+  - `cadvisor:8080` (Docker container metrics)
+  - `pern-server:9000/metrics` (application metrics via prom-client)
+
+### Grafana
+
+- **URL**: `http://<ADD_PUBLIC_IP_OR_DOMAIN>:3001`
+- **Default Credentials**: `admin` / `admin123` (change after first login)
+- **Data Source**: Prometheus (pre-configured via provisioning)
+- **Dashboards**: Place custom dashboard JSON files in `monitoring/grafana/dashboards/`
+
+### Starting the Monitoring Stack
+
+```bash
+# On EC2 or locally
+docker-compose -f docker-compose.monitoring.yml up -d
+
+# Verify services
+docker ps | grep -E 'prometheus|grafana|node-exporter|cadvisor'
+
+# Check Prometheus targets
+curl -s http://localhost:9090/api/v1/targets | jq '.data.activeTargets[] | {job, health}'
+```
+
+### Recommended Dashboards
+
+Import these community dashboards in Grafana (Dashboard → Import):
+
+- **Node Exporter Full**: ID `1860` (system metrics)
+- **Docker Container & Host Metrics**: ID `179` (cAdvisor)
+- **Custom App Dashboard**: Create panels for:
+  - HTTP request rate (`rate(http_requests_total[5m])`)
+  - Response time (`histogram_quantile(0.95, http_request_duration_seconds_bucket)`)
+  - Error rate (`rate(http_errors_total[5m])`)
+
+---
+
+## Security (DevSecOps)
+
+### Trivy Scanning
+
+Trivy is integrated into the Jenkins pipeline to scan for vulnerabilities at multiple levels:
+
+1. **Config Scan**: Detects misconfigurations in Dockerfiles, docker-compose files, and IaC
+2. **Filesystem Scan**: Identifies vulnerabilities in dependencies, secrets in code, and misconfigurations
+3. **Image Scan**: Scans Docker images for OS and application vulnerabilities
+
+### Severity Gates
+
+- **Current**: Scans report `HIGH` and `CRITICAL` vulnerabilities but do **not** block deployment (`--exit-code 0`)
+- **To Enable Blocking**: Change `--exit-code 0` to `--exit-code 1` in the Trivy image scan commands in [`Jenkinsfile`](Jenkinsfile) (lines 122, 132)
+
+### Viewing Reports
+
+- **Jenkins**: Build Artifacts → `security/reports/`
+- **Local**: After running Jenkins locally, check `security/reports/` in the workspace
+
+### Report Formats
+
+- **Table** (`.txt`): Human-readable summary
+- **SARIF** (`.sarif`): For integration with code quality tools (e.g., GitHub Code Scanning)
+- **CycloneDX** (`.cdx.json`): Software Bill of Materials (SBOM) for supply chain security
+
+### Best Practices
+
+- Review Trivy reports after each build
+- Prioritize fixing `CRITICAL` vulnerabilities
+- Use `.trivyignore` to suppress false positives (document reasons)
+- Regularly update base images and dependencies
+
+---
+
+## Local Development
+
+### Prerequisites
+
+- Docker & Docker Compose
+- Node.js 18+ (for local development without Docker)
+
+### Run with Docker Compose
+
+```bash
+# Start all services (client, server, database)
+docker-compose up --build
+
+# Access:
+# - Frontend: http://localhost:3000
+# - Backend: http://localhost:9000
+# - Database: localhost:5432
+```
+
+### Run Locally (without Docker)
+
+**Backend:**
+
+```bash
+cd server
+npm install
+# Create .env file with database credentials
+npm run dev
+```
+
+**Frontend:**
+
+```bash
+cd client
+npm install
+# Create .env file with VITE_API_URL
+npm run start
+```
+
+**Database:**
+
+```bash
+# Start PostgreSQL via Docker
+docker run -d \
+  --name postgres-dev \
+  -e POSTGRES_DB=ecommercestore \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=newpassword \
+  -p 5432:5432 \
+  postgres:15-alpine
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. API Health Check Fails (502 Bad Gateway)
+
+**Symptoms**: `curl http://<EC2_IP>:9000/api/health` returns 502 or times out
+
+**Checks**:
+
+```bash
+# Verify server container is running
+docker ps | grep server
+
+# Check server logs
+docker logs e-commerce-store-server -n 200
+
+# Verify database connection
+docker logs e-commerce-store-db -n 100
+
+# Check port binding
+docker port e-commerce-store-server
+```
+
+**Solutions**:
+- Ensure `POSTGRES_HOST` matches the database service name in `docker-compose.yml`
+- Verify database credentials in server environment variables
+- Check if port 9000 is exposed and not blocked by firewall
+
+#### 2. CORS Errors in Browser
+
+**Symptoms**: Frontend can't reach backend; console shows CORS errors
+
+**Checks**:
+
+```bash
+# Verify VITE_API_URL in client container
+docker exec e-commerce-store-client env | grep VITE_API_URL
+
+# Check server CORS configuration
+docker logs e-commerce-store-server | grep -i cors
+```
+
+**Solutions**:
+- Set `VITE_API_URL` to the correct backend URL (e.g., `http://<EC2_IP>:9000`)
+- Update server `CORS_ORIGIN` to allow the frontend origin
+
+#### 3. Jenkins Deploy Stage Fails
+
+**Symptoms**: Deploy stage fails with SSH or Docker errors
+
+**Checks**:
+
+```bash
+# On Jenkins server, test SSH connectivity
+ssh -i /path/to/key ubuntu@<EC2_IP> "docker ps"
+
+# Check Jenkins console output for error messages
+```
+
+**Solutions**:
+- Verify SSH key is configured in Jenkins credentials
+- Ensure Jenkins has network access to EC2 (security groups, VPN)
+- Check that `/opt/pern` directory exists on EC2
+- Verify `docker-compose.prod.yml` is present on EC2
+
+#### 4. Trivy Scan Fails
+
+**Symptoms**: Security Scan stage fails or hangs
+
+**Checks**:
+
+```bash
+# Verify Trivy is installed on Jenkins server
+trivy --version
+
+# Check Trivy cache directory permissions
+ls -ld /var/lib/trivy
+```
+
+**Solutions**:
+- Install Trivy on Jenkins server (see [Trivy installation guide](https://aquasecurity.github.io/trivy/latest/getting-started/installation/))
+- Ensure Jenkins user has write access to `TRIVY_CACHE_DIR`
+- Increase timeout if scans are slow (large images)
+
+#### 5. Docker Logs Commands
+
+```bash
+# View recent logs
+docker logs <container_name> -n 200
+
+# Follow logs in real-time
+docker logs <container_name> -f
+
+# View logs with timestamps
+docker logs <container_name> -t
+
+# Check all container statuses
+docker compose -f docker-compose.yml ps
+```
+
+---
+
+## Screenshots
+
+Expected screenshots to be placed in `docs/screenshots/`:
+
+- **jenkins_pipeline.png**: Jenkins pipeline showing all stages (Checkout, Test, Build & Push, Security Scan, Deploy) with green checkmarks
+- **trivy_artifacts.png**: Jenkins build artifacts page showing Trivy reports in `security/reports/`
+- **dockerhub_tags.png**: DockerHub repository page showing `latest` and `<SHORT_SHA>` tags for client and server images
+- **ec2_docker_ps.png**: Terminal output of `docker ps` on EC2 showing running containers
+- **app_home.png**: Screenshot of the e-commerce homepage
+- **api_health_200.png**: Browser or curl output showing `/api/health` returning 200 OK
+- **prometheus_targets.png**: Prometheus targets page showing all scrape targets UP
+- **grafana_dashboards.png**: Grafana dashboard showing system, container, or app metrics
+
+<!-- Uncomment when screenshots are added:
+### Jenkins Pipeline
+![Jenkins Pipeline](docs/screenshots/jenkins_pipeline.png)
+
+### DockerHub Tags
+![DockerHub Tags](docs/screenshots/dockerhub_tags.png)
+
+### Grafana Dashboards
+![Grafana Dashboards](docs/screenshots/grafana_dashboards.png)
+-->
+
+---
+
+## Roadmap
+
+Future enhancements:
+
+- [ ] **Blocking Deployment on Critical Vulnerabilities**: Change Trivy `--exit-code 0` to `1` for image scans
+- [ ] **Nginx Reverse Proxy**: Unified routing for all services (client, server, Jenkins) with TLS termination
+- [ ] **Domain & TLS**: Configure custom domain with Let's Encrypt SSL certificates
+- [ ] **Additional Exporters**: Add `nginx_exporter` and `postgres_exporter` for deeper monitoring
+- [ ] **GitHub Release Automation**: Auto-create GitHub releases with changelog on version tags
+- [ ] **Blue-Green Deployment**: Zero-downtime deployments with traffic switching
+- [ ] **Automated Backups**: Scheduled PostgreSQL backups to S3
+
+---
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) file for details.
+
+---
+
+## Author
+
+**Marvin Towett**
+- GitHub: [@mktowett](https://github.com/mktowett)
+- DockerHub: [mktowett](https://hub.docker.com/u/mktowett)
+
+---
+
+<!-- PROVENANCE NOTES (for maintainer reference):
+Data extracted from:
+- Jenkinsfile: Pipeline stages, image names (mktowett/pern-client, mktowett/pern-server), Trivy scan config, deploy logic to /opt/pern
+- docker-compose.yml: Service names (database, server, client), ports (5432, 9000, 3000), env vars, network (ecommercestore)
+- docker-compose.monitoring.yml: Prometheus (9090), Grafana (3001, admin/admin123), node-exporter (9100), cAdvisor (8080)
+- client/Dockerfile: Node 18-alpine, serve on port 3000, npm run build
+- server/Dockerfile: Node 18-alpine, port 9000, npm start
+- client/package.json: React 18, Vite, TailwindCSS, Axios
+- server/package.json: Express, PostgreSQL (pg), prom-client, JWT, Stripe
+- monitoring/prometheus/prometheus.yml: Scrape targets (prometheus, node-exporter, cadvisor, pern-server:9000/metrics)
+- terraform/ec2.tf: t3.micro, Ubuntu 22.04, Docker preinstalled, /opt/pern directory, ports 22/80/443/3000/9000/5432/9090/3001
+- terraform/s3.tf: Artifacts bucket with versioning
+- terraform/outputs.tf: ec2_public_ip, elastic_ip, security_group
+- PROJECT_GUIDE.md: Project overview, tech stack, phase completion status
+
+Placeholders used:
+- <ADD_PUBLIC_IP_OR_DOMAIN>: Replace with EC2 Elastic IP or custom domain
+- <ADD_DB_PASSWORD>: Replace with actual PostgreSQL password
+- <ADD_JWT_SECRET>: Replace with actual JWT signing secret
+- <ADD_REFRESH_SECRET>: Replace with actual JWT refresh secret
+
+Note: docker-compose.prod.yml not found in repo; assumed to be similar to docker-compose.yml but with production configs.
+Note: Nginx config not found; routing is currently direct to service ports.
+Note: Architecture diagram path set to docs/architecture.png (to be created).
+-->
